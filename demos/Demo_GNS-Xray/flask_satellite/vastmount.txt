@@ -1,0 +1,9 @@
+# Commands to mount the view/s
+# Update with your VAST view information
+
+# CLI - 
+sudo mount -t nfs -o vers=3,remoteports=34.20.1.10-34.20.1.15,nconnect=8 protocol.vastemea.com:/pak_satellite /mnt/vast/gns_demo
+
+# /etc/fstab
+### VAST Mount
+protocol.vastemea.com:/pak_satellite /mnt/vast/gns_demo nfs rw,nconnect=8,nfsver=3,spread_reads,spread_writes,remoteports=33.20.1.10-33.20.1.22 0 0

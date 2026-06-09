@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>VAST GNS Demo - {{ app_role | capitalize }} Server</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .image-row { margin-bottom: 30px; }
+        img { max-width: 600px; border: 1px solid #ccc; margin-right: 15px; vertical-align: middle; }
+        button { padding: 8px 15px; font-size: 14px; cursor: pointer; }
+        .processed { color: green; font-weight: bold; margin-left: 10px; }
+        .editor-only { color: gray; margin-left: 10px; }
+    </style>
+</head>
+<body>
+<h1>VAST GNS Demo - {{ app_role | capitalize }} View</h1>
+
+{% for img in images %}
+<div class="image-row">
+    <strong>Original:</strong><br/>
+    <img src="{{ url_for('image_file', filename=img.filename) }}" alt="{{ img.filename }}" width="600" />
+    <br/>
+    <strong>Processed:</strong><br/>
+    {% if img.processed %}
+        <img src="{{ url_for('processed_file', filename=img.processed_name) }}" alt="processed {{ img.filename }}" width="600" />
+        <span class="processed">[Processed]</span>
+    {% else %}
+        <em>No processed image yet</em>
+    {% endif %}
+    <br/><br/>
+    
+    {% if app_role == 'editor' %}
+    <form action="{{ url_for('process_image', filename=img.filename) }}" method="get">
+        <button type="submit">Process</button>
+    </form>
+    {% else %}
+    <span class="editor-only">(Processing handled by Editor server)</span>
+    {% endif %}
+
+</div>
+<hr/>
+{% endfor %}
+
+<script>
+    let lastOriginalCount = 0;
+    let lastProcessedCount = 0;
+    const pollingInterval = 5000; // Check every 5 seconds (more responsive than 10s)
+
+    async function checkForNewImages() {
+        try {
+            // Fetch the updated two-part count from the new API endpoint
+            const response = await fetch('/api/image_count');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            
+            const currentOriginalCount = data.original_count;
+            const currentProcessedCount = data.processed_count;
+
+            // 1. Initial Load Setup
+            if (lastOriginalCount === 0 && lastProcessedCount === 0) {
+                lastOriginalCount = currentOriginalCount;
+                lastProcessedCount = currentProcessedCount;
+                return;
+            }
+            
+            let needsReload = false;
+
+            // 2. Check for New/Deleted Original Image
+            if (currentOriginalCount !== lastOriginalCount) {
+                console.log('Original image count changed. Reloading.');
+                needsReload = true;
+            }
+
+            // 3. Check for New Processed Image (Status change)
+            if (currentProcessedCount !== lastProcessedCount) {
+                console.log('Processed image count changed. Reloading.');
+                needsReload = true;
+            }
+
+            // 4. Perform Reload
+            if (needsReload) {
+                window.location.reload(true); 
+            }
+
+            // 5. Update counts for the next poll
+            lastOriginalCount = currentOriginalCount;
+            lastProcessedCount = currentProcessedCount;
+            
+        } catch (err) {
+            console.error('Error checking image count:', err);
+        }
+    }
+
+    // Start polling every 5 seconds
+    setInterval(checkForNewImages, pollingInterval);
+
+    // Initial check on page load
+    checkForNewImages();
+</script>
+</body>
+</html>

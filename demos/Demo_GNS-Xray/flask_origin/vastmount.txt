@@ -1,0 +1,1 @@
+sudo mount -t nfs -o vers=3,remoteports=33.20.1.10-33.20.1.21,nconnect=8 protocol.vastohio.com:/pak_origin /mnt/vast/gns_demo

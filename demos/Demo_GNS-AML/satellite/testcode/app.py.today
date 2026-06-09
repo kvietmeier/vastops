@@ -1,0 +1,91 @@
+import os
+import glob
+import time
+import pandas as pd
+from flask import Flask, render_template, jsonify
+
+app = Flask(__name__)
+
+# --- CONFIGURATION ---
+DATA_PATH = "/mount/vast"
+LOOKBACK_WINDOW = 5  # Turbo Mode: 5 second heartbeat
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/api/stats')
+def get_stats():
+    try:
+        # 1. FAST SCAN
+        files = glob.glob(f"{DATA_PATH}/*.parquet")
+        
+        if not files:
+            return jsonify({"volume": "$0", "status": "SECURE", "recent_tx": [], "alerts": [], "alert_count": 0})
+
+        # 2. FAST FILTER
+        current_time = time.time()
+        cutoff_time = current_time - LOOKBACK_WINDOW
+
+        recent_files = []
+        for f in files:
+            try:
+                # Filter for files modified within the last 5 seconds
+                if os.path.getmtime(f) > cutoff_time:
+                    recent_files.append(f)
+            except OSError:
+                continue
+
+        # If no data in the last 5s, we return "Zero" state
+        if not recent_files:
+            return jsonify({
+                "volume": "$0",
+                "alert_count": 0,
+                "status": "SECURE",
+                "recent_tx": [],
+                "alerts": []
+            })
+
+        # 3. READ RECENT FILES
+        recent_files.sort(key=os.path.getmtime)
+        data_frames = []
+        for f in recent_files:
+            try:
+                df = pd.read_parquet(f)
+                data_frames.append(df)
+            except:
+                continue
+
+        if not data_frames:
+             return jsonify({"volume": "$0", "status": "SECURE", "recent_tx": [], "alerts": [], "alert_count": 0})
+
+        full_df = pd.concat(data_frames, ignore_index=True)
+
+        # 4. METRICS
+        total_vol = float(full_df['amount'].sum())
+        # Filter for Red Flags
+        alerts_df = full_df[full_df['status'] == 'RED_FLAG']
+        alerts = alerts_df.to_dict(orient='records')
+        
+        # Get last 10 transactions for the feed
+        recent_tx = full_df.tail(10).iloc[::-1].to_dict(orient='records')
+
+        system_status = "CRITICAL" if len(alerts) > 0 else "SECURE"
+
+        return jsonify({
+            "volume": f"${total_vol:,.0f}",
+            "alert_count": len(alerts),
+            "status": system_status,
+            "recent_tx": recent_tx,
+            "alerts": alerts
+        })
+
+    except Exception as e:
+        print(f"CRITICAL ERROR: {e}")
+        return jsonify({"volume": "ERROR", "status": "ERROR", "recent_tx": [], "alerts": [], "alert_count": 0})
+
+if __name__ == '__main__':
+    print(f"--- 🚀 AZURE DASHBOARD (TURBO MODE) ---")
+    print(f"Scanning: {DATA_PATH}")
+    print(f"Window: {LOOKBACK_WINDOW}s")
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -1,0 +1,20 @@
+### Commands for running the demo
+
+
+# List files in folder - gives better output than "ls -l"
+tree -2 /mnt/vast/gns_demo
+
+# Watch the satellite folder
+watch tree -2  /mnt/vast/gns_demo/images/
+
+# Initial copy of files from Dataset
+for i in $(ls -1 ./Dataset | grep xray-112); do cp ./Dataset/${i} /mnt/vast/gns_demo/images; sleep 10; done
+
+# Copy 1 file every minute (filenames are set so you can grab groups)
+for i in $(ls -1 ./Dataset | grep xray-212); do cp ./Dataset/${i} /mnt/vast/gns_demo/images; sleep 60; done
+
+# Use to cleanup folders
+rm  /mnt/vast/gns_demo/images/*
+rm  /mnt/vast/gns_demo/processed/*
+
+
