@@ -3,8 +3,8 @@
 Copyright 2026 Karl V.
 Licensed under the Apache License, Version 2.0 (the "License");
 
-Provision a basic lab SMB view + policy using env vars from set_var54 / _vast_apply
-(via vast_api_init.get_vast_client).
+Provision a basic lab SMB view + policy using env vars
+(via vast_api_init.get_vast_client: VASTDATA_HOST / TF_VAR_vast_*).
 
 Default is dry-run (plan). Pass --apply to create.
 """
