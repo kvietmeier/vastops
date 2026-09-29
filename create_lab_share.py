@@ -17,6 +17,8 @@ from vast_api_init import get_vast_client
 POLICY_NAME = "lab_policy"
 VIEW_PATH = "/lab_share"
 SHARE_NAME = "lab_share"
+# S3 bucket names: lowercase, numbers, periods, hyphens only (no underscores)
+BUCKET_NAME = "lab-share"
 
 POLICY_SPEC = {
     "name": POLICY_NAME,
@@ -211,7 +213,7 @@ def provision_lab_share(apply=False, bucket_owner=None, quiet=False):
         "create_dir": True,
         "protocols": ["NFS", "SMB", "S3"],
         "share": SHARE_NAME,
-        "bucket": SHARE_NAME,
+        "bucket": BUCKET_NAME,
         "bucket_owner": bucket_owner,
     }
 
