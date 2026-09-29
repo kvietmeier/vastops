@@ -16,15 +16,15 @@ import sys
 from vast_api_init import get_vast_client
 
 POLICY_SPEC = {
-    "name": "WindowsServer",
+    "name": "smb_policy",
     "flavor": "SMB",
     "smb_is_ca": True,
     "smb_read_write": "*",
 }
 
 VIEW_SPEC = {
-    "path": "/WindowsServer",
-    "name": "WindowsServer",
+    "path": "/smb_share01",
+    "name": "smb_share01",
     "create_dir": True,
     "protocols": ["SMB"],
 }
