@@ -36,6 +36,11 @@ def get_vast_client():
 if __name__ == "__main__":
     try:
         client = get_vast_client()
-        print(f"✅ Successfully initialized official vastpy Client.")
+        # Light auth probe — proves credentials work against the cluster
+        tenants = client.tenants.get()
+        count = len(tenants) if tenants else 0
+        print("✅ vastpy init + auth OK")
+        print(f"   host={os.getenv('VASTDATA_HOST')}  tenants={count}")
     except Exception as e:
         print(f"❌ Error: {e}")
+        raise SystemExit(1)
