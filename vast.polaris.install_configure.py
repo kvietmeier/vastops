@@ -51,12 +51,15 @@ CLUSTER_NAME = os.getenv("VAST_CLUSTER_NAME", "aws-cluster01")
 CLOUD_PROVIDER = os.getenv("VAST_CLOUD_PROVIDER", "aws").lower()
 
 # --- Paths & Env Vars ---
-USER = os.getenv('USER', 'root')
+_HOME = os.path.expanduser("~")
 # Target the deep Terraform output directory dynamically
-VAST_TF_DIR = os.getenv("VAST_TF_DIR", os.path.expanduser(f"~/.vast/clusters/{CLUSTER_NAME}/terraform/{CLOUD_PROVIDER}/voc"))
-CONFIG_DIR = os.getenv("VAST_CONFIG_DIR", f"/home/{USER}/Terraform/vastdata/cluster_config")
+VAST_TF_DIR = os.getenv(
+    "VAST_TF_DIR",
+    os.path.expanduser(f"~/.vast/clusters/{CLUSTER_NAME}/terraform/{CLOUD_PROVIDER}/voc"),
+)
+CONFIG_DIR = os.getenv("VAST_CONFIG_DIR", f"{_HOME}/Terraform/vastdata/cluster_config")
 TFVARS_FILE = os.getenv("VAST_TFVARS_FILE", "cluster.cfg.vars.terraform.tfvars")
-OUTPUT_DIR = os.getenv("VAST_SECRETS_DIR", f"/home/{USER}/Terraform/vastdata/secrets")
+OUTPUT_DIR = os.getenv("VAST_SECRETS_DIR", f"{_HOME}/Terraform/vastdata/secrets")
 
 # AWS Specific
 AWS_SG_IDS = os.getenv("VAST_AWS_SG_IDS", "")

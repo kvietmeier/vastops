@@ -53,11 +53,22 @@ from pathlib import Path
 
 urllib3.disable_warnings()
 
-# --- Paths ---
-# Adjust these paths as needed for your environment
-CLUSTER_DIR = f"/home/{os.getenv('USER')}/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/cluster01"
-CONFIG_DIR = f"/home/{os.getenv('USER')}/Terraform/vastdata/cluster_config"
-TFVARS_FILE = "cluster.cfg.vars.terraform.tfvars"
+# --- Paths (override via env) ---
+#   VAST_CLUSTER_DIR  Terraform dir for the VoC cluster (infra apply + outputs)
+#   VAST_CONFIG_DIR   Terraform dir for post-ONLINE cluster configuration
+# Example:
+#   export VAST_CLUSTER_DIR="$HOME/Terraform/vast_on_cloud/5_3/lab-deployment01/cluster01"
+#   export VAST_CONFIG_DIR="$HOME/Terraform/vastdata/cluster_config"
+_HOME = os.path.expanduser("~")
+CLUSTER_DIR = os.getenv(
+    "VAST_CLUSTER_DIR",
+    f"{_HOME}/Terraform/vast_on_cloud/5_3/lab-deployment01/cluster01",
+)
+CONFIG_DIR = os.getenv(
+    "VAST_CONFIG_DIR",
+    f"{_HOME}/Terraform/vastdata/cluster_config",
+)
+TFVARS_FILE = os.getenv("VAST_TFVARS_FILE", "cluster.cfg.vars.terraform.tfvars")
 
 # --- Defaults ---
 USERNAME = "admin"

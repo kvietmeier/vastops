@@ -21,14 +21,13 @@
 #   update_vms_ip cluster02
 #
 # Environment:
-#   Assumes HOME environment variable is set correctly and Terraform directories are under:
-#   $HOME/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/
+#   VAST_VOC_ROOT  Base Terraform directory for VoC clusters (required or use default).
+#   Default: $HOME/Terraform/vast_on_cloud/<version>/<deployment-id>
+#   Example: export VAST_VOC_ROOT="$HOME/Terraform/vast_on_cloud/5_3/lab-deployment01"
 #====================================================================================================#
 
-# Use dynamic HOME environment variable
-CLUSTER01="${HOME}/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/cluster01"
-CLUSTER02="${HOME}/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/cluster02"
-CLUSTER03="${HOME}/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/cluster03"
+# Override with: export VAST_VOC_ROOT="$HOME/Terraform/vast_on_cloud/5_3/lab-deployment01"
+VAST_VOC_ROOT="${VAST_VOC_ROOT:-${HOME}/Terraform/vast_on_cloud/5_3/lab-deployment01}"
 
 function update_vms_ip() {
   read -p "Enter cluster name (default: cluster01): " CLUSTER_NAME
@@ -40,7 +39,7 @@ function update_vms_ip() {
     return 1  
   fi
 
-  TF_DIR="${HOME}/Terraform/vast_on_cloud/5_3/1861115-h5-beta1/${CLUSTER_NAME}"
+  TF_DIR="${VAST_VOC_ROOT}/${CLUSTER_NAME}"
 
   # Change to the Terraform directory
   if ! cd "$TF_DIR"; then
