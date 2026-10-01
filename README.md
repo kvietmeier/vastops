@@ -5,4 +5,6 @@ Domain-specific; not general cloud tooling (`cloud-tools`) or laptop env (`syste
 
 Expect local credentials/config outside git (e.g. `vast.creds.sh` patterns). Prefer a venv for Python helpers when needed.
 
-Example: `create_lab_share.py` — dry-run by default; `--apply` creates wide-open multiprotocol `lab_share` (NFS/SMB/S3) using `VASTDATA_HOST` / `TF_VAR_vast_*`.
+Examples:
+- `create_lab_share.py` — dry-run by default; `--apply` creates wide-open multiprotocol `lab_share` (NFS/SMB/S3) using `VASTDATA_HOST` / `TF_VAR_vast_*`.
+- `get_vast_versions.py` — print cluster/VMS build/version via vastpy (same env, or `VMS_*`).
