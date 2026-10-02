@@ -8,3 +8,5 @@ Expect local credentials/config outside git (e.g. `vast.creds.sh` patterns). Pre
 Examples:
 - `create_lab_share.py` — dry-run by default; `--apply` creates wide-open multiprotocol `lab_share` (NFS/SMB/S3) using `VASTDATA_HOST` / `TF_VAR_vast_*`.
 - `get_vast_versions.py` — print cluster/VMS build/version via vastpy (same env, or `VMS_*`).
+- `configure_vast_block.py` — create BLOCK subsystem view + volumes (existing view policy required); same auth env.
+
